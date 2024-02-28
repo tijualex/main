@@ -165,12 +165,12 @@ def index(request):
 #     return render(request,'index.html')
 
 def logout_view(request):
-    print('Logged Out')
+    print('Logged Out' )
     logout(request)
     if 'username' in request.session:
         del request.session['username']
         request.session.clear()
-    return redirect('index')
+    return render(request, 'index.html')
 
 
 #username checking
@@ -544,7 +544,7 @@ def order_confirmation_view(request, design_id):
         user_addresses = ShippingAddress.objects.filter(user=request.user)
 
         # Calculate the total price based on the design's price or any other relevant logic
-        total_price = design.price  # You can adjust this based on your requirements
+        total_price = int(design.price)*82  # You can adjust this based on your requirements
 
         # Pass the design, total_price, and user_addresses to the template
         context = {
@@ -639,7 +639,8 @@ def create_order(request):
         design = get_object_or_404(Designs, pk=design_id)
         delivery_address_id = request.POST.get('selected_address')
         delivery_address = get_object_or_404(ShippingAddress, pk=delivery_address_id)
-        amount = int(design.price * 100)  # Razorpay accepts amount in paise, so multiply by 100
+        amount = int(design.price * 100) 
+        print(amount)# Razorpay accepts amount in paise, so multiply by 100
 
         try:
             # Retrieve all active designers
@@ -699,7 +700,7 @@ def payment_confirm(request, order_id):
     total_price = order.total_price
 
     # Razorpay integration code goes here
-    currency = 'INR'
+    currency = 'USD'
     amount = int(total_price * 100)  # Convert total_price to paisa (assuming price is in rupees)
 
     # Create a Razorpay Order
@@ -913,3 +914,51 @@ def export_order_details_pdf(request, order_id):
     buffer.seek(0)
     response = FileResponse(buffer, as_attachment=True, filename=f'order_{order.order_id}_details.pdf')
     return response
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import ChatMessage
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+from django.shortcuts import render
+from .models import UserProfile
+
+def community(request):
+    chat_messages = ChatMessage.objects.select_related('user__userprofile').all()
+    return render(request, 'design/community.html', {'chat_messages': chat_messages})
+
+    
+@login_required
+def send_message(request):
+    if request.method == 'POST':
+        user = request.user
+        message = request.POST.get('message', '')
+        
+        if message:
+            chat_message = ChatMessage.objects.create(user=user, message=message)
+
+            # Broadcast the message to the chat group
+            channel_layer = get_channel_layer()
+            try:
+                async_to_sync(channel_layer.group_send)(
+                    'chat_group',
+                    {
+                        'type': 'chat.message',
+                        'message': chat_message.message,
+                        'username': user.username,
+                    }
+                )
+            except Exception as e:
+                print(f"Error sending message: {e}")
+
+            messages.success(request, 'Message sent successfully!')
+            return redirect('community') 
+        else:
+            messages.error(request, 'Invalid message. Please enter a non-empty message.')
+
+    return redirect('community')

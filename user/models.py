@@ -130,4 +130,10 @@ class BillingDetails(models.Model):
     
     
     
-    
+class ChatMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f'{self.user.username} - {self.message}'

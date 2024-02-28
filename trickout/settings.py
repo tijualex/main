@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-lg1ts4q7z(d!#g#^6)-+sh*v+eq!+-t8trch(*sogk$=!_a&x_
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.2.2', '127.0.0.1']
 
 
 # Application definition
@@ -45,10 +45,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google', # new
     'customadmin',
-    'django.contrib.sites', # must
+    'django.contrib.sites', 
+    # must
    
     
 ]
+ASGI_APPLICATION = 'trickout.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

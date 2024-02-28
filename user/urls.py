@@ -63,4 +63,9 @@ urlpatterns = [
     path('my_designs/', views.my_designs, name='my_designs'),
     path('design/<int:design_id>/', views.view_design, name='view_design'),
     
+    
+    
+    path('community/', views.community, name='community'),
+    path('send_message/', views.send_message, name='send_message'),
+    
 ]

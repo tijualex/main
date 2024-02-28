@@ -40,9 +40,13 @@ class Hosttest(TestCase):
         design = driver.find_element(By.CSS_SELECTOR, 'a.banner-button[href="/design/"] ')
         design.click()
         time.sleep(2)
+        
+        def test_02_design_page(self):
         design = driver.find_element(By.CSS_SELECTOR, 'button.dress-type-btn[data-dress-type="Gowns"]')
         design.click()
         time.sleep(2)
+        
+        def test_03_design(self):
         options = driver.find_element(By.CSS_SELECTOR, 'div.options[data-toggle="collapse"][href="#fabricPatternOptions"]')
         options.click()
         design = driver.find_element(By.CSS_SELECTOR, 'img[src="/media/media/fabrics/Theory_Dusted_Perfect_Plum_Stretch_Silk_Chiffon_iDogsAn.jpeg"][alt="Perfect Plum Stretch Silk Chiffon"]')
@@ -74,6 +78,8 @@ class Hosttest(TestCase):
         design = driver.find_element(By.CSS_SELECTOR, 'button.btn.btn-primary.mt-4')
         design.click()
         time.sleep(2)
+        
+        def test_04_mesaurement_page(self):
         login=driver.find_element(By.CSS_SELECTOR,'input#shoulder.form-control[type="number"][step="0.1"][required]')
         login.send_keys('16')
         time.sleep(2)
